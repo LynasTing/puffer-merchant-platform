@@ -25,11 +25,11 @@ const tagsClose = (item: { title: string, path: string }, i: number) => {
 
 <template>
   <div class="h-8 mb-4 select-none">
-    <router-link :to="item.path" v-for="(item, index) in titles" :key="item.path">
-      <el-tag size="large" closable class="mr-2 cursor-pointer" @close="tagsClose(item, index)">
+    <el-tag size="large" closable class="mr-2 cursor-pointer" @close="tagsClose(item, index)" v-for="(item, index) in titles" :key="item.path">
+      <router-link :to="item.path">
         {{ item.title }}
-      </el-tag>
-    </router-link>
+      </router-link>
+    </el-tag>
   </div>
 </template>
 
