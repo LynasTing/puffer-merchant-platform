@@ -29,3 +29,11 @@ export interface TableData {
 export const option: TableOption[] = [{
   multipleSelection: true,
 }]
+// 页面筛选条件
+export type InquireType = {
+  label: string
+  value: any
+  key: string
+  options?: Array
+  type: string
+}

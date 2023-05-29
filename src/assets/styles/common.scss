@@ -7,9 +7,11 @@
     align-items: center;
     margin: 10px;
     div {
+      font-size: 16px;
       white-space: nowrap;
     }
     .el-input  {
+      font-size: 14px;
       width: 200px;
       max-width: 200px;
     }
@@ -18,13 +20,14 @@
 .btn-range {
   display: flex;
   flex-wrap: wrap;
-  max-width: 280px;
+  max-width: 300px;
   height: inherit;
   margin-left: 20px;
-  .el-button {
-    margin: 0 10px 10px 0;
+  padding-top: 8px;
+  ::v-deep(.el-button) {
+    margin: 0 10px 10px 0 !important;
   }
-  .el-button:nth-child( 3n) {
-    margin-right: 0;
+  ::v-deep(.el-button):nth-child(3n) {
+    margin-right: 0 !important;
   }
 }

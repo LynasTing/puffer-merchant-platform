@@ -4,6 +4,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import vueSetupExtend from 'vite-plugin-vue-setup-extend'
+// 需要yarn add @types/node -D
 import { resolve } from 'path'
 export default defineConfig({
   plugins: [
@@ -33,6 +34,18 @@ export default defineConfig({
     }
   },
   server: {
-    open: true
+    host: '0.0.0.0',
+    port: 7777,
+    open: true,
+    cors: true, // 允许ajax跨域
+    proxy: {
+      '/merchant': {
+        target: `http://fz.hthuandian.cn/merchant`,
+        changeOrigin: true, // 是否跨域
+        rewrite: path => path.replace(/^\/merchant/, '') 
+        // ws: true,  // 如果要代理 websockets,需要配置这个参数
+        // secure: true,  // 如果是https接口,需要配置这个参数
+      }
+    },
   }
 })
