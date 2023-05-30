@@ -15,7 +15,6 @@ const phonePass = (_rule: any, value: any, callback: any) => {
   setTimeout(() => {
     const reg = /^1[3|4|5|7|8|6|9][0-9]\d{8}$/
     if(!reg.test(value)) {
-      console.log(`手机号 + ::>>`, value)
       return callback(new Error('请输入正确的手机号'))
     }else {
       callback()
@@ -61,7 +60,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         })
         setTimeout(() => {
           router.push('/')
-        }, 1.5 * 1000)
+        }, 1.2 * 1000)
       }
     } else {
       console.log('error submit!', fields)

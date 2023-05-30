@@ -19,20 +19,20 @@ const changeSideBarStatus = (e: boolean) => {
 <template>
   <div class="w-full h-full">
     <el-container class="el-container">
-      <el-aside width="collapse" class="h-screen el-aside select-none">
-        <el-menu :collapse="isCollapse" :default-active="_route.fullPath" router class="el-menu-vertical" background-color="#545c64" active-text-color="#ffd04b" text-color="#fff" >
-          <div class="flex items-center justify-center mr-0 h-14">
-            <img src="@/static/imgs/global/logo_small.png" class="h-12 w-28" v-if="!isCollapse" />
+      <el-aside width="collapse" class="h-screen el-aside select-none ">
+        <el-menu :collapse="isCollapse" :default-active="_route.path" router class="el-menu-vertical h-full" background-color="#304156" active-text-color="#409eff" text-color="#BFCBD9" >
+          <div class="flex items-center justify-center mr-0 h-14 min-w-min">
+            <img src="@/static/imgs/global/logo_white.png" class="h-12 w-28" v-if="!isCollapse" />
             <img src="@/static/imgs/global/logo_icon.png" class="ml-1 w-7 h-7" v-else="isCollapse" />
           </div>
           <SideBar :mainRoutes="mainRoutes" />
         </el-menu>
       </el-aside>
-      <el-container>
-        <el-header class="h-16 text-white bg-gray-700 ">
+      <el-container :class="!isCollapse ? 'main-ml-open' : 'main-ml-close'" class="flex flex-col max-h-screen overflow-y-auto">
+        <el-header class="h-16 bg-white">
           <Header :changeSideBarStatus="changeSideBarStatus" />
         </el-header>
-        <el-main class="py-0 bg-gray-200 ">
+        <el-main class="py-0 bg-gray-100">
           <BreadCrumbsTitle />
           <RouterView />
         </el-main>
@@ -48,4 +48,11 @@ const changeSideBarStatus = (e: boolean) => {
 .el-menu-vertical {
   border: none;
 }
+// .main-ml-open {
+//   margin-left: 153px;
+// }
+// .main-ml-close {
+//   margin-left: 64px;
+//   transition: all .5s;
+// }
 </style>
