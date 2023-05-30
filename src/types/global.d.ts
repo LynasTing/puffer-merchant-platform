@@ -4,6 +4,12 @@ export interface Api<T> {
   result: T
   msg: string
 }
+// 基本通用的提交类型
+export type PostApi = {
+  code: string
+  msg: string
+  data: string
+}
 // 模拟登录 
 export interface PasswordLoginType {
   code: string

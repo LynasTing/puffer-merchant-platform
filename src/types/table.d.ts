@@ -5,6 +5,7 @@ export interface TableOption {
   multipleSelection?: true
   // 表头
   label: string
+  fixed?: string
   // 对应列的宽度
   width?: string | number
   // 对齐方式

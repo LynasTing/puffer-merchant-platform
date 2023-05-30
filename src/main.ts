@@ -5,6 +5,7 @@ import 'normalize.css'
 import '@/assets/styles/tailwind.css'
 import '@/assets/styles/iconfont.css'
 import "nprogress/nprogress.css"
+import 'default-passive-events'
 import ElementPlus from 'element-plus'
 import zhCn from 'element-plus/lib/locale/lang/zh-cn'
 import 'element-plus/theme-chalk/el-loading.css'

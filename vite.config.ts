@@ -34,6 +34,7 @@ export default defineConfig({
     }
   },
   server: {
+    hmr: true,
     host: '0.0.0.0',
     port: 7777,
     open: true,
@@ -47,5 +48,8 @@ export default defineConfig({
         // secure: true,  // 如果是https接口,需要配置这个参数
       }
     },
+  },
+  build: {
+    outDir: 'merchant-platform'
   }
 })
