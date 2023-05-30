@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { showLoading, hideLoading } from './loading'
+import router from '@/router'
 
 console.log(`当前环境process.env.NODE_ENV + ::>>`, import.meta.env.VITE_BASE_API)
 const request = axios.create({
@@ -66,6 +67,15 @@ request.interceptors.response.use(
     const { code, data, msg } = result.data
     if(code === '200') {
       return data
+    }else if(code === '401') {
+      ElMessage({
+        message: msg,
+        type: 'error',
+        duration: 2 * 1000
+      })
+      setTimeout(() => {
+        router.push('/login')
+      }, 1 * 1000)
     }else {
       ElMessage.error(msg)
     }

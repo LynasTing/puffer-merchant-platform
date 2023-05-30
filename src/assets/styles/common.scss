@@ -31,3 +31,9 @@
     margin-right: 0 !important;
   }
 }
+::v-deep(.el-dialog) {
+  padding: 10px;
+}
+::v-deep(.el-table ) thead {
+  font-size: 15px;
+}
