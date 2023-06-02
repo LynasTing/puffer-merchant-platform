@@ -17,7 +17,9 @@ const props = defineProps({
 })
 // 触发父组件方法
 const onSubmit = (type?: string) => {
-  if(type === 'reset') props.inquireInfo.forEach((item: any) => item.value = '')
+  if(type === 'reset') {
+    props.inquireInfo.forEach((item: any) => item.value = '')
+  }
   info = props.inquireInfo.reduce((prev: any, cur: any) => {
     if (cur.value) {
       prev[cur.key] = cur.value
@@ -39,9 +41,9 @@ const onSubmit = (type?: string) => {
       <article class="flex">
         <div class="search-range">
           <template  v-for="item in props.inquireInfo" :key="item.label">
-            <div class="search-condition" v-if="item.type === 'input'">
+            <div class="search-condition" v-if="item.type === 'input'" >
               <div>{{ item.label }}：</div>
-              <el-input v-model="item.value" :placeholder="`请输入${item.label}`" clearable />
+              <el-input v-model="item.value" :placeholder="`请输入${item.label}`" :style="{'width': item.width}"  @keyup.enter.native="onSubmit" clearable />
             </div>
             <div class="search-condition" v-if="item.type === 'select'">
               <div>{{ item.label }}：</div>

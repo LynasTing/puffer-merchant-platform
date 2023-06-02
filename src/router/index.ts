@@ -42,9 +42,9 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/pages/finance-manage/index.vue'),
         children: [
           {
-            path: '/finance-wall-info',
-            name: 'financeWallInfo',
-            meta: { icon: 'HomeFilled', title: '财务概览' },
+            path: '/finance-overview',
+            name: 'financeOverview',
+            meta: { icon: 'List', title: '财务总览' },
             component: () => import('@/views/pages/finance-manage/overview.vue')
           },
           {
@@ -52,12 +52,6 @@ const routes: Array<RouteRecordRaw> = [
             name: 'financeSecondary',
             meta: { icon: 'Search', title: '二级商户信息' },
             component: () => import('@/views/pages/finance-manage/secondary.vue')
-          },
-          {
-            path: '/finance-detail',
-            name: 'financeDetail',
-            meta: { icon: 'List', title: '财务明细' },
-            component: () => import('@/views/pages/finance-manage/detail.vue')
           },
           {
             path: '/finance-apply-cash',
@@ -73,12 +67,12 @@ const routes: Array<RouteRecordRaw> = [
           }
         ]
       },
-      {
-        path: '/rider-change-battery-records',
-        name: 'RiderChangeBatteryRecords',
-        meta: { icon: 'Bicycle', title: '骑手换电记录' },
-        component: () => import('@/views/pages/rider-change-battery-records/index.vue')
-      }
+      // {
+      //   path: '/rider-change-battery-records',
+      //   name: 'RiderChangeBatteryRecords',
+      //   meta: { icon: 'Bicycle', title: '骑手换电记录' },
+      //   component: () => import('@/views/pages/rider-change-battery-records/index.vue')
+      // }
     ]
   },
 ]

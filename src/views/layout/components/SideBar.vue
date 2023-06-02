@@ -16,7 +16,7 @@ const go = (item: AsideMenuType) => {
     
 <template>
   <template v-for="item in props.mainRoutes" :key="item.path">
-    <el-sub-menu v-if="item?.children?.length" :index="item.name" @click.self="go(item)">
+    <el-sub-menu v-if="item?.children?.length && !item.meta?.hidden" :index="item.name" @click.self="go(item)">
       <template #title>
         <el-icon>
           <component :is="item.meta?.icon" />
@@ -25,7 +25,7 @@ const go = (item: AsideMenuType) => {
       </template>
       <SideBar :mainRoutes="item?.children" />
     </el-sub-menu>
-    <el-menu-item v-else :index="item.path" @click.self="go(item)">
+    <el-menu-item v-else :index="item.path" @click.self="go(item)" v-if="!item.meta?.hidden">
       <el-icon>
         <component :is="item.meta?.icon" />
       </el-icon>

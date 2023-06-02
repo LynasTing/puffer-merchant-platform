@@ -3,6 +3,7 @@ export interface Api<T> {
   code: string
   result: T
   msg: string
+  isUpload?: boolean
 }
 // 基本通用的提交类型
 export type PostApi = {

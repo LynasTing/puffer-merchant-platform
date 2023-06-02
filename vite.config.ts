@@ -23,6 +23,7 @@ export default defineConfig({
       '@': resolve(__dirname, './src')
     }
   },
+  base: process.env.NODE_ENV === 'production' ? './' : '/',
   // 自动导入scss变量和mixins变量
   css: {
     preprocessorOptions: {
@@ -34,7 +35,7 @@ export default defineConfig({
     }
   },
   server: {
-    hmr: true,
+    hmr: true ,
     host: '0.0.0.0',
     port: 7777,
     open: true,

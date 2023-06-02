@@ -4,13 +4,14 @@ import { TableOption, TableData } from '@/types/table'
 
 const emit = defineEmits(['pageChange'])
 const props = defineProps<Props>()
-watch(props.tableData, (newVal, oldVal) => {
-  console.log(newVal, oldVal)
-})
+watch(() => props.currentPage, (n :number) => {
+  if(n === 1) currPage.value = n
+})  
 type Props = {
   option: Array<TableOption>
   tableData: Array<TableData>
-  total: Number
+  total: number
+  currentPage: number
 }
 let currPage = ref<Number>(1)
 // 分页
@@ -21,14 +22,14 @@ const handlePageChange = (e: number) => {
 </script>
 <template>
   <div class="w-full bg-red-300 ">
-  <el-table v-if="tableData.length" :data="tableData" v-bind="{ border: true }" highlight-current-row class="el-table" :header-cell-style="{ background: '#f5f7fa' }" style="width: 80%">
+  <el-table v-if="tableData?.length" :data="tableData" v-bind="{ border: true }" highlight-current-row class="el-table" :header-cell-style="{ background: '#f5f7fa' }" style="width: 80%">
     <el-table-column type="selection" width="50px" v-if="option?.multipleSelection" />
-    <el-table-column v-if="false" type="index" label="序号" width="70" fixed="left">
+    <el-table-column type="index" label="序号" width="70" fixed="left">
       <template #default="{ $index }">
         <i>{{ $index + 1 }}</i>
       </template>
     </el-table-column>
-    <el-table-column v-for="col in option" :resizable="false" :key="col.prop" :label="col.label" :prop="col.prop" :width="col.width" v-bind="{ ...col.attrs }">
+    <el-table-column v-for="col in option" :resizable="false" :key="col.prop" :label="col.label" :prop="col.prop" min-width="100px" :width="col.width" v-bind="{ ...col.attrs }">
       <template #header>
         <span>{{ col.label }}</span>
       </template>
@@ -37,10 +38,9 @@ const handlePageChange = (e: number) => {
       </template>
     </el-table-column>
   </el-table>
-<el-empty v-else description="暂无数据" class="bg-white" />
+  <el-empty v-else description="暂无数据" class="bg-white" />
 </div>
-
-  <div class="bg-white flex px-8 pt-10 pb-3 justify-end items-center">
+  <div class="bg-white flex px-8 pt-10 pb-3 justify-end items-center" v-show="total >= 1">
     <div class="text-sm text-gray-500 ">
       共<text class="text-blue-500"> {{ ' ' + total + ' ' }} </text>条
     </div>

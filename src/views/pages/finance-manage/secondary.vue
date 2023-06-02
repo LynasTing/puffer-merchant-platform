@@ -1,29 +1,48 @@
 <script lang="ts" setup>
 import InquireCard from '@/components/inquire-card/index.vue'
 import { TableOption, InquireType } from '@/types/table'
-import { FormInstance, FormRules } from 'element-plus/lib/components/index.js'
 import ReuseTable from '@/components/reuse-table/index.vue'
 import { financeSubMerchant } from '@/api/finance-manage/index'
 import { Finance } from '@/types/finance'
-import router from '@/router'
 
 // 展示的信息数据, 从接口获取
 const subMerParams = ref({
   pageNumber: 1,
   pageSize: 10
 })
+let currentPage = ref<number>(1)
+// 获取筛选条件
+const getChildren = (e: any[]) => {
+  if(Object.keys(e).length) {
+    Object.keys(e).forEach((key: string) => {
+      if(Object.keys(subMerParams.value).includes(key)) subMerParams.value[key] = e[key]
+    })
+    subMerParams.value.pageNumber = currentPage.value =  1
+  }else {
+    currentPage.value =  1
+    subMerParams.value = {
+      pageNumber: 1,
+      pageSize: 10
+    }
+  }
+  getDataList()
+}
+// pagination分页
+const pageChange = (e: number) => {
+  subMerParams.value.pageNumber = currentPage.value =   e
+  getDataList()
+}
 let totalNum = ref<Number>(0)
 const tableData = ref<Finance[]>([])
 const getDataList = async () => {
-  const res = await financeSubMerchant({ ...subMerParams })
-  const { list, total } = res
-  tableData.value = list
-  totalNum.value = total
+  const res = await financeSubMerchant({ ...subMerParams.value })
+  if(res) {
+    const { list, total } = res
+    tableData.value = list
+    totalNum.value = total
+  }
 }
-// 子组件table过滤
-const filterMethod = e => {
-  console.log(`e + ::>>`, e)
-}
+
 getDataList()
 
 // 传给子组件的需要渲染的筛选条件
@@ -45,37 +64,7 @@ const inquireInfo = ref<InquireType[]>([
     value: '',
     key: 'date',
     type: 'date'
-  },
-  // {
-  //   label: '姓名',
-  //   value: '',
-  //   key: 'username',
-  //   type: 'input'
-  // },
-  // {
-  //   label: '手机号',
-  //   value: '',
-  //   key: 'input',
-  //   type: 'input'
-  // },
-  // {
-  //   label: '性别',
-  //   value: '',
-  //   key: 'sex',
-  //   options: [
-  //     {
-  //       label: '男',
-  //       value: 1
-  //     },
-  //     {
-  //       label: '女',
-  //       value: 0
-  //     },
-  //   ],
-  //   type: 'select'
-  // },
- 
-  
+  }
 ])
 // 都要展示什么字段 (el-header), 在此处配置插槽信息
 const option = reactive<TableOption[]>([
@@ -116,80 +105,12 @@ const option = reactive<TableOption[]>([
     slot: 'registerTimeSlot'
   }
 ])
-// 删除
-const toDetail = (row) => {
-  console.log(`row + ::>>`, row)
-  router.push('./detail.vue')
-}
 
-/**
- * @apply 提现相关
- */
-
-const applyDialog = ref(false)
-const applyRef = ref<FormInstance>()
-const applyParams = ref({
-  bankTitle: '',
-  bankHandler: '',
-  bankNo: '',
-  name: '',
-  phone: '',
-  cashFund: '',
-})
-const cardPass = (_rule: any, value: any, callback: any) => {
-  console.log(`value + ::>>`, value)
-  if(!value) return callback(new Error('请输入银行卡号'))
-  setTimeout(() => {
-    const regExp = /^([1-9]{1})(\d{14}|\d{18})$/; 
-    if(!regExp.test(value.trim())) {
-      return callback(new Error('请输入正确的银行卡号(15 ~ 19位)')) 
-    }else {
-      callback()
-    }
-  }, 500)
-}
-const applyRule = reactive<FormRules>({
-  bankTitle: [{ required: true, trigger: 'blur', message: '请输入银行名称' }],
-  bankHandler: [{ required: true, trigger: 'blur', message: '请输入开户行' }],
-  bankNo: [{ validator: cardPass, trigger: 'blur' }],
-  name: [{ required: true, trigger: 'blur', message: '请输入持卡人姓名' }],
-  phone: [{ required: true, trigger: 'blur', message: '请输入银行预留号码' }],
-  cashFund: [{ required: true, trigger: 'blur', message: '请输入提现金额' }]
-})
-// 提交提现
-const applySubmit = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return
-  await formEl.validate(async (valid: boolean, fields: any) => {
-    if(valid) {
-      const res  = await financeApplyCash({ ...applyParams }) as unknown as string
-      if(res === '请求成功') {
-        ElNotification({
-          title: '操作成功',
-          message: res,
-          type: 'success',
-          showClose: false,
-          duration: 1.5 * 1000
-        })
-      }
-    }else {
-      console.log('error submit!', fields)
-    }
-  })
-}
-// 关闭提现弹窗
-const closeApplySubmit = () => {
-  applyDialog.value = false
-  applyRef.value?.resetFields()
-}
 </script>
 
 <template>
-  <InquireCard :inquireInfo="inquireInfo" title="二级商户信息" @getChildren="getDataList">
-    <template #btnSlot>
-      <el-button type="primary" plain @click="applyDialog = true">提现申请</el-button>
-    </template>
-  </InquireCard>
-  <ReuseTable :option="option" :tableData="tableData" :total="totalNum">
+  <div class="mb-6 text-2xl font-semibold card-header">二级商户信息</div>
+  <ReuseTable :option="option" :tableData="tableData" :total="totalNum" @pageChange="pageChange" :currentPage="currentPage">
     <template #superiorSlot="{ row }">
       {{ row.superior || '--' }}
     </template>

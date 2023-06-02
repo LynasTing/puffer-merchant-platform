@@ -40,3 +40,17 @@ export type merchantType = {
     list: merchant[]
   }
 }
+// 一级商户套餐
+export type MerchantCombo = {
+  id: number
+  comboInfo: string
+  comboType: string
+  comboMoney: string
+  ctime: string
+  comboCount: string
+}
+interface MerchantComboType {
+  code: string
+  msg: string
+  data: MerchantCombo[]
+}

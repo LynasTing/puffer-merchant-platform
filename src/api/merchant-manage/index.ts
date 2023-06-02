@@ -1,6 +1,6 @@
 import _request from "@/utils/request"
 import { Api, PostApi } from "@/types/global"
-import { merchantType } from '@/types/merchant'
+import { merchantType, MerchantComboType } from '@/types/merchant'
 
 // 商户分页查询
 export const merchantPageQuery = (data: object) => {
@@ -18,14 +18,15 @@ export const merchantPageQuery = (data: object) => {
 // }
 // 一级商户套餐查询
 export const merFirstCombo = () => {
-  return _request<Api<LogoutType>>({
-    url: '/firstMerchant/combo'
+  return _request<Api<MerchantComboType>>({
+    url: '/mer/firstMerchant/combo'
   })
 }
 // 二级商户套餐绑定
-export const secondaryComboBind = () => {
-  return _request<Api<LogoutType>>({
-    url: '/mer/secondaryMerchant/combo'
+export const secondaryComboBind = (data: object) => {
+  return _request<Api<PostApi>>({
+    url: '/mer/secondaryMerchant/combo',
+    data
   })
 }
 // 二级商户新增
@@ -42,7 +43,7 @@ export const merchantEcho = (data: object) => {
     data
   })
 }
-// 二级商户修改回显
+// 二级商户修改
 export const merchantUpdate = (data: object) => {
   return _request<Api<PostApi>>({
     url: '/mer/merchantUpdate',

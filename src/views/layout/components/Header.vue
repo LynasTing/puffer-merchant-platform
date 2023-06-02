@@ -1,6 +1,8 @@
 <script lang="ts" setup>
-import { logout } from '@/api/user'
+import { logout, passwdChange } from '@/api/user'
 import { useRouter } from 'vue-router'
+import { SwitchButton, Edit } from '@element-plus/icons'
+import { FormInstance, FormRules } from 'element-plus/lib/components/index.js'
 
 const router = useRouter()
 const isCollapse = ref(false)
@@ -44,7 +46,6 @@ const logOut = () => {
     center: true
   })
   .then(async () => {
-   
     const msg = await logout()
     if(msg === '请求成功') {
       ElNotification({
@@ -56,15 +57,70 @@ const logOut = () => {
       })
       setTimeout(() => {
         router.push('/login')
-      }, 1.5 * 1000);
+      }, 1.5 * 1000)
     }
   })
   .catch(() => {
     ElMessage({
       type: 'info',
-      message: '用户点击取消'
+      message: '您点击了取消'
     })
   })
+}
+// 修改密码
+const editDialog = ref<Boolean>(false)
+const editRef = ref<FormInstance>()
+const editParams = ref({ oldPassword: '', newPassword: '' })
+// 密码验证
+const passwordPass = (_rule: any, value: any, callback: any) => {
+  if(!value) return callback(new Error('请输入密码'))
+  setTimeout(() => {
+    // 必须包含 大写英文字母 小写英文字母 英文小数点 长度 > 8
+    const reg = /^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[\x21-\x2f\x3a-\x40\x5b-\x60\x7B-\x7F])[\da-zA-Z\x21-\x2f\x3a-\x40\x5b-\x60\x7B-\x7F]{8,}$/
+    if(!reg.test(value)) {
+      return callback(new Error('密码需各包含大、小写的英文字母、数字、仅一位的英文小数点, 并不少于8位'))
+    }else {
+      callback()
+    }
+  }, 500)
+}
+const editRule = reactive<FormRules>({
+  oldPassword: [{ required: true, trigger: 'blur', message: '请输入您的旧密码' }, { min: 5, max: 16, message: '请输入8~16位字符' }],
+  newPassword: [{ required: true, trigger: 'blur', message: '请输入您的新密码' }, { min: 5, max: 16, message: '请输入8~16位字符' }]
+  // newPassword: [{ validator: passwordPass, required: true }, { min: 8, max: 16, message: '请输入8~16位字符' }]
+})
+// 取消修改密码
+const editCancel = () => {
+  editDialog.value = false
+  editRef.value?.resetFields()
+}
+// 提交修改密码
+const editSubmit = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  await formEl.validate(async (valid: boolean, fields: any) => {
+    if(valid) {
+      const res = await passwdChange({ ...editParams.value }) 
+      if(res === '请求成功') {
+        await logout()
+        editCancel()
+        ElNotification({
+          title: '操作成功，请您重新登录',
+          message: res,
+          type: 'success',
+          showClose: false,
+          duration: 1.5 * 1000
+        })
+        setTimeout(() => {
+          router.push('/login')
+        }, 1.5 * 1000)
+      }
+    }else {
+      console.log('error submit!', fields)
+    }
+  })
+}
+const editPassWord = () => {
+  editDialog.value = true
 }
 onMounted(() => {
   // 容错各种内核浏览器的全屏 
@@ -99,13 +155,28 @@ onMounted(() => {
           <img src="@/static/imgs/global/default_cloud.jpg" class="w-8 h-8 rounded-full">
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item @click="logOut">退出登录</el-dropdown-item>
+              <el-dropdown-item :icon="Edit" @click="editPassWord">修改密码</el-dropdown-item>
+              <el-dropdown-item :icon="SwitchButton" @click="logOut">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
       </li>
     </ul>
   </header>
+  <el-dialog v-model="editDialog" width="450px" title="修改登录密码" @close="editCancel">
+    <el-form :model="editParams" :rules="editRule" ref="editRef" label-position="right">
+      <el-form-item prop="oldPassword" label="旧密码" class="items-center">
+        <el-input v-model="editParams.oldPassword" type="password" size="large" placeholder="请输入旧密码" maxlength="16" show-password class="el-input" />
+      </el-form-item>
+      <el-form-item prop="newPassword" label="新密码" class="items-center">
+        <el-input v-model="editParams.newPassword" type="password" size="large" placeholder="请输入新密码" maxlength="16" show-password class="el-input" />
+      </el-form-item>
+    </el-form>
+    <div class="flex justify-end mt-10 ">
+      <el-button type="info" plain @click="editCancel">取消</el-button>
+      <el-button type="primary" plain @click="editSubmit(editRef)">确定</el-button>
+    </div>
+  </el-dialog>
 </template>
 
 <style lang="scss" scoped>

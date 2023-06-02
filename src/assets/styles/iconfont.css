@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 4077888 */
-  src: url('//at.alicdn.com/t/c/font_4077888_ilw2xmbn4n.woff2?t=1684732781758') format('woff2'),
-       url('//at.alicdn.com/t/c/font_4077888_ilw2xmbn4n.woff?t=1684732781758') format('woff'),
-       url('//at.alicdn.com/t/c/font_4077888_ilw2xmbn4n.ttf?t=1684732781758') format('truetype');
+  src: url('//at.alicdn.com/t/c/font_4077888_etzgfsvq0vw.woff2?t=1685672256048') format('woff2'),
+       url('//at.alicdn.com/t/c/font_4077888_etzgfsvq0vw.woff?t=1685672256048') format('woff'),
+       url('//at.alicdn.com/t/c/font_4077888_etzgfsvq0vw.ttf?t=1685672256048') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,30 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-dongjiejine:before {
+  content: "\e616";
+}
+
+.icon-benyue:before {
+  content: "\e64e";
+}
+
+.icon-yonghu:before {
+  content: "\e617";
+}
+
+.icon-yue:before {
+  content: "\e60e";
+}
+
+.icon-dc-icon-benyuehuoderongziqiye:before {
+  content: "\e608";
+}
+
+.icon-shangchuan:before {
+  content: "\e78a";
 }
 
 .icon-tuichuquanping:before {

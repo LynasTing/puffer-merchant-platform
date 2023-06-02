@@ -3,13 +3,12 @@ import InquireCard from '@/components/inquire-card/index.vue'
 import ReuseTable from '@/components/reuse-table/index.vue'
 import { FormInstance, FormRules } from 'element-plus/lib/components/index.js'
 import { TableOption, InquireType } from '@/types/table'
-import { merchantPageQuery, merchantSave, merchantEcho, merchantUpdate } from '@/api/merchant-manage/index'
-import { merchant } from '@/types/merchant'
-import { useRouter } from 'vue-router'
+import { merchantPageQuery, merchantSave, merchantEcho, merchantUpdate, merFirstCombo, secondaryComboBind } from '@/api/merchant-manage/index'
+import { merchant, MerchantCombo } from '@/types/merchant'
 
-const router = useRouter()
 const options = ref({
   type: [{ text: '企业', value: 0 }, { text: '个体', value: 1 }],
+  grade: [{ text: '二级', value: 2 }],
   merCombo: []
 })
 /**
@@ -17,14 +16,42 @@ const options = ref({
  */
 const merchantParams = ref({
   pageNumber: 1,
-  pageSize: 10
+  pageSize: 10,
+  merName: '',
+  likPhone: '',
+  merType: '',
+  merSuperior: '',
+  status: ''
 })
-let totalNum = ref<Number>(0)
+let currentPage = ref<number>(1)
+let totalNum = ref<number>(0)
 const tableData = ref<merchant[]>([])
+const getChildren = (e: any[]) => {
+  if(Object.keys(e).length) {
+    Object.keys(e).forEach((key: string) => {
+      if(Object.keys(merchantParams.value).includes(key)) merchantParams.value[key] = e[key]
+    })
+    merchantParams.value.pageNumber = currentPage.value =  1
+  }else {
+    currentPage.value =  1
+    merchantParams.value = {
+      pageNumber: 1,
+      pageSize: 10,
+      merName: '',
+      likPhone: '',
+      merType: '',
+      merSuperior: '',
+      status: ''
+    }
+  }
+  getDataList()
+}
 const getDataList = async () => {
   const res = await merchantPageQuery({ ...merchantParams.value })
-  tableData.value = res.list
-  totalNum = res.total
+  if(res) {
+    tableData.value = res.list
+    totalNum = res.total
+  }
 }
 getDataList()
 const formatCredit = computed(() => {
@@ -39,43 +66,69 @@ const formatCredit = computed(() => {
     }
   }
 })
+// pagination分页
+const pageChange = (e: number) => {
+  merchantParams.value.pageNumber = currentPage.value = e
+  getDataList()
+}
 // 传给子组件的需要渲染的筛选条件
 const inquireInfo = ref<InquireType[]>([
   {
-    label: '姓名',
+    label: '商户名称',
     value: '',
-    key: 'username',
+    key: 'merName',
     type: 'input'
   },
   {
     label: '手机号',
     value: '',
-    key: 'input',
+    key: 'likPhone',
     type: 'input'
   },
   {
-    label: '性别',
+    label: '商户类型',
     value: '',
-    key: 'sex',
+    key: 'merType',
+    type: 'select',
     options: [
       {
-        label: '男',
-        value: 1
+        label: '个体',
+        value: '1'
       },
       {
-        label: '女',
-        value: 0
-      },
-    ],
-    type: 'select'
+        label: '企业',
+        value: '0'
+      }
+    ]
   },
   {
-    label: '日期',
+    label: '上级商户',
     value: '',
-    key: 'date',
-    type: 'date'
+    key: 'merSuperior',
+    type: 'input'
   },
-  
+  {
+    label: '状态',
+    value: '',
+    key: 'status',
+    type: 'select',
+    options: [
+      {
+        label: '禁用',
+        value: '1'
+      },
+      {
+        label: '启用',
+        value: '0'
+      }
+    ]
+  },
+  // {
+  //   label: '日期',
+  //   value: '',
+  //   key: 'date',
+  //   type: 'date'
+  // },
 ])
 // 都要展示什么字段 (el-header), 在此处配置插槽信息
 const option = reactive<TableOption[]>([
@@ -92,7 +145,7 @@ const option = reactive<TableOption[]>([
   {
     label: '手机号',
     prop: 'likPhone',
-    width: '110px',
+    width: '120px',
     slot: 'likPhoneSlot'
   },
   {
@@ -161,9 +214,8 @@ const option = reactive<TableOption[]>([
 /**
  * @二级商户新增修改
  */
-const idEdit = ref<Boolean>(false)
+const isEdit = ref<Boolean>(false)
 const subMerchantDialog = ref<Boolean>(false)
-
 const subMerchantRef = ref<FormInstance>()
 const subMerchantParams = ref({
   merName: '',
@@ -185,18 +237,17 @@ const editSubMerchant = async (row: merchant) => {
   Object.keys(res).forEach(key => {
     if(Object.keys(subMerchantParams.value).includes(key)) subMerchantParams.value[key] = res[key]
   })
-  idEdit.value = subMerchantDialog.value = true
+  isEdit.value = subMerchantDialog.value = true
 }
 // 提交新增/修改二级商户
 const subMerchant = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(async (valid: boolean, fields: any) => {
     if(valid) {
-      const res = idEdit ? await merchantUpdate({ ...subMerchantParams.value }) as unknown as string : await merchantSave({ ...subMerchantParams.value }) as unknown as string
-      console.log(`res + ::>>`, res)
+      const res = isEdit.value ? (await merchantUpdate({ ...subMerchantParams.value }) as unknown as string) : (await merchantSave({ ...subMerchantParams.value }) as unknown as string)
       if(res === '请求成功') {
         ElNotification({
-          title: `${idEdit ? '修改' : '新增'}成功`,
+          title: `${isEdit.value ? '修改' : '新增'}成功`,
           message: res,
           type: 'success',
           showClose: false,
@@ -212,69 +263,66 @@ const subMerchant = async (formEl: FormInstance | undefined) => {
 }
 // 取消新增二级商户
 const closeSubMerchantSubmit = () => {
-  subMerchantDialog.value = false
-  subMerchantRef.value?.resetFields()
+  isEdit.value = subMerchantDialog.value = false
 }
 /**
  * @绑定二级套餐
  */
-const currMerchantId = ref<Number>(-1)
+const currCombo = ref<Number>(0)
 const bindComboDialog = ref<Boolean>(false)
-const bindComboRef = ref<FormInstance>()
+const firstCombos = ref<MerchantCombo[]>([])
+const selectCombo = (_item: MerchantCombo, index: number) => {
+  currCombo.value = index
+  bindComboParams.value.comboId = _item.id
+}
 const bindComboParams = ref({
-  merCombo: '',
-  merId: ''
+  comboId: 0,
+  merId: 0
 })
-const bindComboRule = reactive<FormRules>({
-  merCombo: [{ required: true, trigger: 'change', message: '请选级商户套餐' }]
-})
-const bindSubCombo = (e: merchant) => {
-  currMerchantId.value = e.id
-  console.log(`e + ::>>`, e)
-  // res
-  bindComboDialog.value = true
 
+const bindSubCombo = async (e: merchant ) => {
+  bindComboParams.value.merId = e.id
+  const res = await merFirstCombo()
+  bindComboParams.value.comboId = res[0]?.id
+  firstCombos.value = res
+  bindComboDialog.value = true
 }
 // 取消绑定二级套餐
 const closeBindCombo = () => {
   bindComboDialog.value = false
-  bindComboRef.value?.resetFields()
+  bindComboParams.value = { comboId: 0, merId: 0 }
 }
 // 提交二级商户套餐绑定
-const bindComboSubmit = async (formEl: FormInstance | undefined) => {
-  console.log(` 提交二级商户套餐绑定+ ::>>`, )
-  return 
-  // if (!formEl) return
-  // await formEl.validate(async (valid: boolean, fields: any) => {
-  //   if(valid) {
-  //     return 
-  //     const res = await ()
-  //     console.log(`res + ::>>`, res)
-  //     if(res === '请求成功') {
-  //       ElNotification({
-  //         title: `${idEdit ? '修改' : '新增'}成功`,
-  //         message: res,
-  //         type: 'success',
-  //         showClose: false,
-  //         duration: 2 * 1000
-  //       })
-  //       getDataList()
-  //       closeSubMerchantSubmit()
-  //     }
-  //   }else {
-  //     console.log('error submit!', fields)
-  //   }
-  // })
+const bindComboSubmit = async () => {
+  if(!bindComboParams.value.comboId) {
+    ElMessage({
+      message: '您还未选择套餐，请选择',
+      type: 'error',
+      duration: 2 * 1000
+    })
+    return 
+  }
+  const res = await secondaryComboBind({ ...bindComboParams.value })
+  if(res === '请求成功') {
+    ElNotification({
+      title: `绑定成功`,
+      message: res,
+      type: 'success',
+      showClose: false,
+      duration: 2 * 1000
+    })
+    getDataList()
+    closeBindCombo()
+  }
 }
 </script>
-
 <template>
-  <InquireCard :inquireInfo="inquireInfo" title="商户概览" @getChildren="getDataList">
+  <InquireCard :inquireInfo="inquireInfo" title="商户概览" @getChildren="getChildren">
     <template #btnSlot>
       <el-button type="primary" plain @click.stop="subMerchantDialog = true">二级商户新增</el-button>
     </template>
   </InquireCard>
-  <ReuseTable :option="option" :tableData="tableData" :total="totalNum">
+  <ReuseTable :option="option" :tableData="tableData" :total="totalNum" @pageChange="pageChange" :currentPage="currentPage">
     <template #merNameSlot="{ row }">
       {{ row.merName || '--' }}
     </template>
@@ -322,31 +370,24 @@ const bindComboSubmit = async (formEl: FormInstance | undefined) => {
     </template>
   </ReuseTable>
   <!-- 新增/修改二级商户 -->
-  <el-dialog v-model="subMerchantDialog" :title="`${idEdit ? '修改' : '新增'}二级商户`" width="500px" @closed="closeSubMerchantSubmit">
-    <el-form :model="subMerchantParams" :rules="subMerchantRule" ref="subMerchantRef">
-      <el-form-item prop="merName">
-        <el-input v-model.number="subMerchantParams.merName" placeholder="请输入商户名称">
-          <template #prepend>商户名称</template>
-        </el-input>
+  <el-dialog v-model="subMerchantDialog" :title="`${isEdit ? '修改' : '新增'}二级商户`" width="500px" @closed="closeSubMerchantSubmit">
+    <el-form :model="subMerchantParams" :rules="subMerchantRule" ref="subMerchantRef" label-position="left" label-width="100px">
+      <el-form-item prop="merName" label="商户名称">
+        <el-input v-model.number="subMerchantParams.merName" placeholder="请输入商户名称" />
       </el-form-item>
-      <el-form-item prop="likName">
-        <el-input v-model.number="subMerchantParams.likName" placeholder="请输入联系人">
-          <template #prepend>联系人</template>
-        </el-input>
+      <el-form-item prop="likName" label="联系人">
+        <el-input v-model.number="subMerchantParams.likName" placeholder="请输入联系人" />
       </el-form-item>
-      <el-form-item prop="likPhone">
-        <el-input v-model.number="subMerchantParams.likPhone" maxlength="11" oninput="value=value.replace(/^\.+|[^\d.]/g,'')" placeholder="请输入联系电话">
-          <template #prepend>联系电话</template>
-        </el-input>
+      <el-form-item prop="likPhone" label="联系电话">
+        <el-input v-model.number="subMerchantParams.likPhone" maxlength="11" oninput="value=value.replace(/^\.+|[^\d.]/g,'')" placeholder="请输入联系电话" />
       </el-form-item>
-      <el-form-item prop="merGrade">
-        <el-input v-model="subMerchantParams.merGrade" disabled oninput="value=value.replace(/^\.+|[^\d.]/g,'')" placeholder="请输入商户等级">
-          <template #prepend>商户等级</template>
-        </el-input>
+      <el-form-item prop="merGrade" label="商户等级">
+        <el-select v-model="subMerchantParams.merGrade" placeholder="请选择商户类型" disabled >
+          <el-option v-for="item in options.grade" :key="item.value" :label="item.text" :value="item.value" />
+        </el-select>
       </el-form-item>
-      <el-form-item prop="merType">
+      <el-form-item prop="merType" label="商户类型">
         <div class="flex">
-          <div class="mr-4 bg-gray-100 text-gray-500  rounded-md px-4">商户类型</div>
           <el-select v-model="subMerchantParams.merType" placeholder="请选择商户类型" >
             <el-option v-for="item in options.type" :key="item.value" :label="item.text" :value="item.value" />
           </el-select>
@@ -359,24 +400,35 @@ const bindComboSubmit = async (formEl: FormInstance | undefined) => {
     </div>
   </el-dialog>
   <!-- 绑定商户套餐dialog -->
-  <el-dialog v-model="bindComboDialog" title="绑定商户套餐" width="500px"  @closed="closeBindCombo">
-    <el-form :model="bindComboParams" :rules="bindComboRule" ref="bindComboRef">
-      <el-form-item prop="merCombo">
-        <div class="flex">
-          <div class="mr-4 bg-gray-100 text-gray-500 rounded-md px-4">商户类型</div>
-          <el-select v-model="bindComboParams.merCombo" placeholder="请选择商户类型" >
-            <el-option v-for="item in options.type" :key="item.value" :label="item.text" :value="item.value" />
-          </el-select>
-        </div>
-      </el-form-item>
-      <div class="flex justify-end mt-10 ">
-        <el-button type="info" plain @click="closeBindCombo">取消</el-button>
-        <el-button type="primary" plain @click="bindComboSubmit(bindComboRef)">确定</el-button>
-      </div>
-    </el-form>
+  <el-dialog v-model="bindComboDialog" title="绑定商户套餐" width="900px" @closed="closeBindCombo">
+    <ul class="flex justify-between flex-wrap overflow-auto px-6 py-6 combo-list" v-infinite-scroll="(_load: any) =>{} ">
+      <li class="w-5/12 mb-4 h-96 select-none" v-for="(item, index) in firstCombos" :key="index" @click="selectCombo(item, index)">
+        <el-card class="cursor-pointer h-full desc-card wrap" shadow="hover" :class="currCombo === index ? 'select-card' : ''">
+          <el-descriptions title="套餐信息" direction="vertical" border :column="2">
+            <el-descriptions-item label="名称">{{ item.comboInfo || '--' }}</el-descriptions-item>
+            <el-descriptions-item label="类型">{{ item.comboType }}</el-descriptions-item>
+            <el-descriptions-item label="金额">{{ item.comboMoney || '--' }}</el-descriptions-item>
+            <el-descriptions-item label="可用次数">{{ item.comboCount || 0 }}</el-descriptions-item>
+            <el-descriptions-item label="创建时间">{{ item.ctime }}</el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+      </li>
+    </ul>
+    <div class="flex justify-end mt-10 ">
+      <el-button type="info" plain @click="closeBindCombo">取消</el-button>
+      <el-button type="primary" plain @click="bindComboSubmit()">确定</el-button>
+    </div>
   </el-dialog>
 </template>
 
 <style lang="scss" scoped>
-
+.combo-list {
+  max-height: 550px;
+  .desc-card {
+    border: 1px solid transparent;
+  }
+  .select-card {
+    border: 1px solid #409eff !important
+  }
+}
 </style>

@@ -37,4 +37,5 @@ export type InquireType = {
   key: string
   options?: Array
   type: string
+  width?: string
 }

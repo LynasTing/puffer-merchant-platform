@@ -12,8 +12,7 @@
     }
     .el-input  {
       font-size: 14px;
-      width: 200px;
-      max-width: 200px;
+      width: 200px
     }
   }
 }
@@ -36,4 +35,16 @@
 }
 ::v-deep(.el-table ) thead {
   font-size: 15px;
+}
+::v-deep(.el-form-item__label) {
+  color: rgb(107 114 128 / var(--tw-text-opacity));
+  background-color: #f3f4f6;
+  padding: 0 16px;
+  border-radius: 6px;
+  margin-right: 16px;
+}
+::v-deep(.el-descriptions__table) {
+  .el-descriptions__cell {
+    text-align: center !important;
+  }
 }

@@ -6,7 +6,7 @@ import { passwordLogin } from '@/api/user'
 const router = useRouter()
 const apiParams = ref({
   account: '15827465192',
-  password: '12345'
+  password: '54321'
 })
 const loginRef = ref<FormInstance>()
 // 手机号码单独验证
@@ -60,7 +60,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         })
         setTimeout(() => {
           router.push('/')
-        }, 1.2 * 1000)
+        }, 0.8 * 1000)
       }
     } else {
       console.log('error submit!', fields)

@@ -6,19 +6,11 @@ console.log(`当前环境process.env.NODE_ENV + ::>>`, import.meta.env.VITE_BASE
 const request = axios.create({
   baseURL: import.meta.env.VITE_BASE_API,
   headers: {
-    'Content-Type': 'application/x-www-form-urlencoded'
+    'Content-Type': 'multipart/form-data'
   },
   method: 'post',
   timeout: 5000
 })
-// let cancelArr: AxiosCancel[] = []
-// export const cancelAsk = () => {
-//   cancelArr = cancelArr?.forEach(item =>{
-//     item.cancel()
-//     return false
-//   })
-// }
-
 // 添加请求拦截器
 request.interceptors.request.use(
   config => {
@@ -34,20 +26,6 @@ request.interceptors.request.use(
         }
       )
     }
-    // cancelArr.filter(item => {
-    //   if(item.url === config.url && item.method === config?.method) {
-    //     item.cancel()
-    //     return false
-    //   }
-    //   return true
-    // })
-    // config.cancelToken = new axios.CancelToken(cancel => {
-    //   cancelArr.push({
-    //     url: config.url,
-    //     method: config.method,
-    //     cancel
-    //   })
-    // }) 
     // // 在发送请求之前做些什么 (配置请求头、加入token等)
     return config
   },
@@ -73,14 +51,15 @@ request.interceptors.response.use(
         type: 'error',
         duration: 2 * 1000
       })
-      setTimeout(() => {
-        router.push('/login')
-      }, 1 * 1000)
+      router.push('/login')
     }else {
       ElMessage.error(msg)
     }
   },
   (error: AxiosError<any>) => {
+    setTimeout(() => {
+      hideLoading()
+    }, 3 * 1000)
     // 网络超时
     if(!error.response) {
       console.log(`网络超时 + ::>>`, )
