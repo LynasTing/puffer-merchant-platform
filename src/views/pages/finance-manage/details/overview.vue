@@ -192,7 +192,7 @@ const option = reactive<TableOption[]>([
       {{ formatType(row.type) || '--' }}
     </template>
     <template #fundSlot="{ row }">
-      {{ row.fund || '--' }}
+      {{ row.fund || '--' }} 
     </template>
     <template #comboNameSlot="{ row }">
       {{ row.comboName || '--' }}

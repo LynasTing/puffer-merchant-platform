@@ -1,1 +1,0 @@
-import{L as e}from"./index-3a9c1492.js";const n=r=>e({url:"/mer/merchantPageQuery",data:r}),a=()=>e({url:"/mer/firstMerchant/combo"}),c=r=>e({url:"/mer/secondaryMerchant/combo",data:r}),o=r=>e({url:"/mer/merchantSave",data:r}),m=r=>e({url:"/mer/merchantEcho",data:r}),s=r=>e({url:"/mer/merchantUpdate",data:r});export{m as a,s as b,o as c,a as d,n as m,c as s};

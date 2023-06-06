@@ -224,10 +224,22 @@ const subMerchantParams = ref({
   merType: '',
   merGrade: 2
 })
+// 手机号码单独验证
+const validPhone = (_rule: any, value: any, callback: any) => {
+  if(!value) return callback(new Error('请输入手机号码'))
+  setTimeout(() => {
+    const reg = /^1[3|4|5|7|8|6|9][0-9]\d{8}$/
+    if(!reg.test(value)) {
+      return callback(new Error('请输入正确的手机号'))
+    }else {
+      callback()
+    }
+  }, 300)
+}
 const subMerchantRule = reactive<FormRules>({
   merName: [{ required: true, trigger: 'blur', message: '请输入商户名称' }],
   likName: [{ required: true, trigger: 'blur', message: '请输入联系人' }],
-  likPhone: [{ required: true, trigger: 'blur', message: '请输入联系电话' }],
+  likPhone:[{ validator: validPhone, trigger: 'blur' }],
   merType: [{ required: true, trigger: 'change', message: '请选择商户类型' }],
   merGrade: [{ required: true, trigger: 'change', message: '请选择商户等级' }]
 })
@@ -263,6 +275,7 @@ const subMerchant = async (formEl: FormInstance | undefined) => {
 }
 // 取消新增二级商户
 const closeSubMerchantSubmit = () => {
+  subMerchantRef.value?.resetFields()
   isEdit.value = subMerchantDialog.value = false
 }
 /**
@@ -373,13 +386,13 @@ const bindComboSubmit = async () => {
   <el-dialog v-model="subMerchantDialog" :title="`${isEdit ? '修改' : '新增'}二级商户`" width="500px" @closed="closeSubMerchantSubmit">
     <el-form :model="subMerchantParams" :rules="subMerchantRule" ref="subMerchantRef" label-position="left" label-width="100px">
       <el-form-item prop="merName" label="商户名称">
-        <el-input v-model.number="subMerchantParams.merName" placeholder="请输入商户名称" />
+        <el-input v-model="subMerchantParams.merName" placeholder="请输入商户名称" />
       </el-form-item>
       <el-form-item prop="likName" label="联系人">
-        <el-input v-model.number="subMerchantParams.likName" placeholder="请输入联系人" />
+        <el-input v-model="subMerchantParams.likName" placeholder="请输入联系人" />
       </el-form-item>
-      <el-form-item prop="likPhone" label="联系电话">
-        <el-input v-model.number="subMerchantParams.likPhone" maxlength="11" oninput="value=value.replace(/^\.+|[^\d.]/g,'')" placeholder="请输入联系电话" />
+      <el-form-item prop="likPhone" label="联系电话" required>
+        <el-input v-model="subMerchantParams.likPhone" maxlength="11" type="tel" oninput="value=value.replace(/^\.+|[^\d.]/g,'')" placeholder="请输入联系电话" />
       </el-form-item>
       <el-form-item prop="merGrade" label="商户等级">
         <el-select v-model="subMerchantParams.merGrade" placeholder="请选择商户类型" disabled >

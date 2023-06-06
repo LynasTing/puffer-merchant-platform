@@ -80,7 +80,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
             <el-input oninput="value=value.replace(/^\.+|[^\d.]/g,'')" v-model.number="apiParams.account" size="large" placeholder="请输入手机号码" maxlength="11" type="tel" class="el-input" />
           </el-form-item>
           <el-form-item prop="password">
-            <el-input v-model="apiParams.password" type="password" size="large" placeholder="请输入密码" maxlength="16" show-password class="el-input" />
+            <el-input v-model="apiParams.password" type="password" size="large" placeholder="请输入密码" maxlength="16" show-password class="el-input" @keyup.enter.native="submitForm(loginRef)" />
           </el-form-item>
         </el-form>
         <el-button type="primary" @click="submitForm(loginRef)" class="w-32">登录</el-button>

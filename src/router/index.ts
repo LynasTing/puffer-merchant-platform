@@ -41,30 +41,44 @@ const routes: Array<RouteRecordRaw> = [
         meta: { icon: 'Wallet', title: '商户财务管理' },
         component: () => import('@/views/pages/finance-manage/index.vue'),
         children: [
+          // {
+          //   path: '/finance-overview',
+          //   name: 'financeOverview',
+          //   meta: { icon: 'List', title: '财务总览' },
+          //   component: () => import('@/views/pages/finance-manage/overview.vue')
+          // },
           {
-            path: '/finance-overview',
-            name: 'financeOverview',
-            meta: { icon: 'List', title: '财务总览' },
-            component: () => import('@/views/pages/finance-manage/overview.vue')
+            path: '/finance-details',
+            name: 'financeDetails',
+            meta: { icon: 'List', title: '账户明细' },
+            component: () => import('@/views/pages/finance-manage/details/index.vue'),
+            children: [
+              {
+                path: '/overview',
+                name: 'financeOverview',
+                meta: { icon: 'View', title: '总览' },
+                component: () => import('@/views/pages/finance-manage/details/overview.vue')
+              },
+              {
+                path: '/apply-cash',
+                name: 'financeApplyCash',
+                meta: { icon: 'Memo', title: '提现单' },
+                component: () => import('@/views/pages/finance-manage/details/applyCash.vue')
+              },
+              {
+                path: '/charge-records',
+                name: 'financeChargeRecord',
+                meta: { icon: 'Money', title: '充值单' },
+                component: () => import('@/views/pages/finance-manage/details/charge.vue')
+              }
+            ]
           },
           {
             path: '/finance-secondary',
             name: 'financeSecondary',
-            meta: { icon: 'Search', title: '二级商户信息' },
+            meta: { icon: 'CopyDocument', title: '二级商户信息' },
             component: () => import('@/views/pages/finance-manage/secondary.vue')
           },
-          {
-            path: '/finance-apply-cash',
-            name: 'financeApplyCash',
-            meta: { icon: 'Memo', title: '提现记录' },
-            component: () => import('@/views/pages/finance-manage/applyCash.vue')
-          },
-          {
-            path: '/finance-charge-records',
-            name: 'financeChargeRecord',
-            meta: { icon: 'Money', title: '充值记录' },
-            component: () => import('@/views/pages/finance-manage/charge.vue')
-          }
         ]
       },
       // {
@@ -74,6 +88,14 @@ const routes: Array<RouteRecordRaw> = [
       //   component: () => import('@/views/pages/rider-change-battery-records/index.vue')
       // }
     ]
+  },
+  {
+    path: '/404',
+    component: () => import('@/views/pages/error/404.vue')
+  },
+  {
+    path: '/:catchAll(.*)',
+    redirect: '/404',
   },
 ]
 

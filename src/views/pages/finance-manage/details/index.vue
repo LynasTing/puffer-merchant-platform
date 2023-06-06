@@ -2,9 +2,7 @@
 </script>
 
 <template>
-  <div>
-    骑手换电记录
-  </div>
+  <RouterView />
 </template>
 
 <style lang="scss" scoped>

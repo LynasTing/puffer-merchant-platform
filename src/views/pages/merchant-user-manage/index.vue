@@ -255,10 +255,10 @@ const riderOperationSubmit = async (formEl: FormInstance | undefined) => {
   if(!formEl) return
   await formEl.validate(async (valid: boolean, fields: any) => {
     if(valid) {
-      const res = currRiderId.value ? await riderUpdate({ ...riderParams.value, id: currRiderId.value })  as unknown as string : await riderSave({ ...riderParams.value })  as unknown as string
+      const res = currRiderId.value !== -1 ? await riderUpdate({ ...riderParams.value, id: currRiderId.value })  as unknown as string : await riderSave({ ...riderParams.value })  as unknown as string
       if(res === '请求成功') {
         ElNotification({
-          title: `${currRiderId.value ? '修改' : '新增'}成功`,
+          title: `${currRiderId.value !== -1 ? '修改' : '新增'}成功`,
           message: res,
           type: 'success',
           showClose: false,
@@ -434,7 +434,7 @@ const terminateCombo = async (e: UserRider) => {
     </template>
   </ReuseTable>
   <!-- 新增/修改骑手 -->
-  <el-dialog v-model="riderDialog" :title="`${ currRiderId ? '修改' : '新增' }骑手`" width="500px"  @closed="closeRiderOperation">
+  <el-dialog v-model="riderDialog" :title="`${ currRiderId !== -1 ? '修改' : '新增' }骑手`" width="500px"  @closed="closeRiderOperation">
     <el-form :model="riderParams" :rules="riderRule" ref="riderRef" :scroll-to-error="true" label-position="left" label-width="130px">
       <el-form-item prop="riderName" label="骑手姓名">
         <el-input v-model="riderParams.riderName" placeholder="请输入骑手姓名" max-length="12" />
